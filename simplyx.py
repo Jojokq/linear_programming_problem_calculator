@@ -1,5 +1,5 @@
 import numpy as np
-
+import csv
 from consol_input import data_input
 
 def print_array(array):
@@ -79,6 +79,15 @@ def calc(array, basis_cols, n):
         
         
 def final_calc():
+
+    arr = []
+
+    with open('datatable/inequality_system.csv', 'r', newline='') as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            print(row)
+
+
     #для теста
     #a = [[350, 14, 5, 1, 0, 0], [392, 14, 8, 0, 1, 0], [408, 6, 12, 0, 0, 1], [0, -10, -5, 0, 0, 0]]
     a = [[12, 3, 1, 1, 0, 0], [12, 1, 3, 0, 1, 0], [7, 2, 0, 0, 0, 1], [0, -2, -3, 0, 0, -5]]

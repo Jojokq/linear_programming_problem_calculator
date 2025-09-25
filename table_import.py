@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from consol_input import base_output
 
-FILENAME = Path('Datatable/data.csv').resolve()
+FILENAME = Path('datatable/inequality_system.csv').resolve()
 
 dataset = []
 
