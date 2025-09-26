@@ -26,18 +26,20 @@ def rectangle_method(arr,  a_row, a_col, basis_cols):
                 
 
 
-def find_allowing_element(array, basis_cols, n):
+def find_allowing_element(array, basis_cols, n, number_of_variables, target_function_row_number = -1):
+    #seeking for col
     min_el = 0
-    min_el_col_index = 0
-    for i in range(1, n):
-        if min_el > array[-1][i]:
-            min_el = array[-1][i]
+    min_el_col_index = 1
+    for i in range(1, number_of_variables): 
+        if min_el > array[target_function_row_number][i]:
+            min_el = array[target_function_row_number][i]
             min_el_col_index = i
     if min_el >= 0:
         return 0, -1
+    #seeking for row
     min_el =  array[0][0] / array[0][min_el_col_index] 
     min_el_row_index = 0
-    for i in range(1, len(array)):
+    for i in range(1, n):
         if array[i][min_el_col_index] != 0:
             temp = array[i][0] / array[i][min_el_col_index]
         if temp > 0 and temp < min_el:
@@ -45,13 +47,15 @@ def find_allowing_element(array, basis_cols, n):
             min_el_row_index = i
     if min_el < 0:
         return -1, 0
-    el = min_el_row_index + n
+    #updating basis
+    el = min_el_row_index + number_of_variables + 1
     it = basis_cols.index(el)
     basis_cols[it] = min_el_col_index
+    #returning row/col indexes of allowing element
     return min_el_row_index, min_el_col_index
 
 
-def answer_print(array, basis_cols, n):
+def answer_print(array, basis_cols, n): #REDO WITH ANY BASIS !!!!!!!!!!!!!!!!!!!!!!!!!!
     answer = []
     length = len(array[0])
     for i in range(len(basis_cols)):
@@ -63,9 +67,18 @@ def answer_print(array, basis_cols, n):
     return 0
 
 
-def calc(array, basis_cols, n):
+def check_Mrow_target(array, basis_cols, n):
+    for i in array[-2]:
+        if i!=0:
+            return 1
+    return 0
+
+def calc(array, basis_cols, n, m):
     #print_array(array)
-    row, col = find_allowing_element(array, basis_cols, n)
+    if not check_Mrow_target(array, basis_cols, n):
+        row, col = find_allowing_element(array, basis_cols, n, m)
+    else:
+        row, col = find_allowing_element(array, basis_cols, n, m,  -2)
     while True:
         if row == 0 and col == -1:
             print_array(array)
@@ -75,63 +88,30 @@ def calc(array, basis_cols, n):
             return 0
         rectangle_method(array, row, col, basis_cols)
         change_basis(row, col, array)
-        row, col = find_allowing_element(array, basis_cols, n)
+        if not check_Mrow_target(array, basis_cols, n):
+            row, col = find_allowing_element(array, basis_cols, n, m)
+        else:
+            row, col = find_allowing_element(array, basis_cols, n, m,  -2)
         
         
 def final_calc():
-
+    '''
     arr = []
 
     with open('datatable/inequality_system.csv', 'r', newline='') as csv_file:
         reader = csv.reader(csv_file)
         for row in reader:
             print(row)
-
+    '''
 
     #для теста
-    #a = [[350, 14, 5, 1, 0, 0], [392, 14, 8, 0, 1, 0], [408, 6, 12, 0, 0, 1], [0, -10, -5, 0, 0, 0]]
-    a = [[12, 3, 1, 1, 0, 0], [12, 1, 3, 0, 1, 0], [7, 2, 0, 0, 0, 1], [0, -2, -3, 0, 0, -5]]
-    b = [3,4,5]
-    c=3
+    a = [[225, 5, 3, -1, 0, 0, 1, 0, 0], [150, 2.5, 3, 0, -1, 0, 0, 1, 0], [80, 1, 1.3, 0, 0, -1, 0, 0, 1],
+          [-455, -8.5, -7.3, 1, 1, 1, 0, 0, 0], [0, 5, 2, 0, 0, 0, 0, 0, 0]] # Таблица для метода искусственного базиса
+    b = [6,7,8] #базисные столбцы
+    c=3 #число уравнений
+    d = 5 #число переменных
     #basis_cols = [3, 4, 5]
     #результат: 20, 14, 270
     #a, b, c = data_input()
-    calc(a,b,c)
+    calc(a,b,c, d)
 final_calc()
-
-'''
-#-------------ОТЛАДКА
-n, m = 3, 3
-
-system_eq = [[350, 14, 5, 1, 0, 0], [392, 14, 8, 0, 1, 0], [408, 6, 12, 0, 0, 1], [0, -10, -5, 0, 0, 0]]
-print('список')
-print_array(system_eq)
-
-eq_arr = np.array(system_eq, dtype=float)
-print('массив')
-print(eq_arr)
-basis_cols = [3, 4, 5]
-
-print_array(system_eq)
-row, col = find_allowing_element(system_eq, basis_cols, n)
-print(row)
-
-print(basis_cols)
-
-print('прямоугольник!!!!!!!!!!\n\n\n\n')
-
-rectangle_method(system_eq, row, col, basis_cols)
-
-print_array(change_basis(row, col, system_eq))
-#--------------
-
-
-#------------Вывод--------  
-#print('на массиве')
-#calc(eq_arr, basis_cols, n)
-system_eq = [[350, 14, 5, 1, 0, 0], [392, 14, 8, 0, 1, 0], [408, 6, 12, 0, 0, 1], [0, -10, -5, 0, 0, 0]]
-basis_cols = [3, 4, 5]
-#print('На списке')
-calc(system_eq, basis_cols, n=3)
-'''
-
