@@ -2,9 +2,12 @@ import numpy as np
 import csv
 from consol_input import data_input
 
+EPSILON = 0.00005
+
 def print_array(array):
     for i in range(len(array)):
         print(array[i], end="\n")
+    print()
 
 def change_basis(row, col, array):
     r_el = array[row][col]
@@ -30,7 +33,7 @@ def find_allowing_element(array, basis_cols, n, number_of_variables, target_func
     #seeking for col
     min_el = 0
     min_el_col_index = 1
-    for i in range(1, number_of_variables): 
+    for i in range(1, number_of_variables + 1): 
         if min_el > array[target_function_row_number][i]:
             min_el = array[target_function_row_number][i]
             min_el_col_index = i
@@ -48,12 +51,16 @@ def find_allowing_element(array, basis_cols, n, number_of_variables, target_func
     if min_el < 0:
         return -1, 0
     #updating basis
+    '''print(basis_cols)
     el = min_el_row_index + number_of_variables + 1
     it = basis_cols.index(el)
-    basis_cols[it] = min_el_col_index
+    basis_cols[it] = min_el_col_index'''
     #returning row/col indexes of allowing element
     return min_el_row_index, min_el_col_index
 
+
+def update_basis(basis_cols, new_row, new_col):
+    basis_cols[new_row] = new_col
 
 def answer_print(array, basis_cols, n): #REDO WITH ANY BASIS !!!!!!!!!!!!!!!!!!!!!!!!!!
     answer = []
@@ -67,19 +74,32 @@ def answer_print(array, basis_cols, n): #REDO WITH ANY BASIS !!!!!!!!!!!!!!!!!!!
     return 0
 
 
-def check_Mrow_target(array, basis_cols, n):
-    for i in array[-2]:
-        if i!=0:
+def check_Mrow_target(array, n):
+    for i in range(0, len(array)-n+1):
+        if abs(array[-2][i]) > EPSILON:
             return 1
     return 0
 
 def calc(array, basis_cols, n, m):
-    #print_array(array)
-    if not check_Mrow_target(array, basis_cols, n):
+    if check_Mrow_target(array, n) == 0:
         row, col = find_allowing_element(array, basis_cols, n, m)
     else:
         row, col = find_allowing_element(array, basis_cols, n, m,  -2)
+    while check_Mrow_target(array, n):
+        if row == -1 and col == 0:
+            print('Система несовместна. Решений нет.')
+            return 0
+        update_basis(basis_cols, row, col)
+        rectangle_method(array, row, col, basis_cols)
+        change_basis(row, col, array)
+        row, col = find_allowing_element(array, basis_cols, n, m,  -2)
+    print_array(array)
+    print('phase 2')
+    update_basis(basis_cols, row, col)
     while True:
+        row, col = find_allowing_element(array, basis_cols, n, m)
+        update_basis(basis_cols, row, col)
+        print(row, '   ',col,'\n')
         if row == 0 and col == -1:
             print_array(array)
             return answer_print(array, basis_cols, n)
@@ -88,11 +108,6 @@ def calc(array, basis_cols, n, m):
             return 0
         rectangle_method(array, row, col, basis_cols)
         change_basis(row, col, array)
-        if not check_Mrow_target(array, basis_cols, n):
-            row, col = find_allowing_element(array, basis_cols, n, m)
-        else:
-            row, col = find_allowing_element(array, basis_cols, n, m,  -2)
-        
         
 def final_calc():
     '''
