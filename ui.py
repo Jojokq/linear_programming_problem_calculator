@@ -221,6 +221,7 @@ class InequalityApp(BoxLayout):
         
         print(f"CSV файл '{filename}' успешно создан!")
         print(f'Ваше решение!: ')
+        final_calc()
 
 
 class InequalityAppApp(App):

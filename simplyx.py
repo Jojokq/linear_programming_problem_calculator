@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from consol_input import data_input
+from table_import import import_table
 
 EPSILON = 0.00005
 
@@ -45,12 +46,15 @@ def find_allowing_element(array, basis_cols, n, number_of_variables, target_func
     for i in range(1, n):
         if array[i][min_el_col_index] != 0:
             temp = array[i][0] / array[i][min_el_col_index]
-        if temp > 0 and temp < min_el:
-            min_el = temp
-            min_el_row_index = i
+            if temp > 0 and temp < min_el:
+                min_el = temp
+                min_el_row_index = i
     if min_el < 0:
         return -1, 0
     #updating basis
+    update_basis(basis_cols, min_el_row_index, min_el_col_index)
+    rectangle_method(array, min_el_row_index, min_el_col_index, basis_cols)
+    change_basis(min_el_row_index, min_el_col_index, array)
     '''print(basis_cols)
     el = min_el_row_index + number_of_variables + 1
     it = basis_cols.index(el)
@@ -86,47 +90,48 @@ def calc(array, basis_cols, n, m):
     else:
         row, col = find_allowing_element(array, basis_cols, n, m,  -2)
     while check_Mrow_target(array, n):
+        print_array(array)
         if row == -1 and col == 0:
             print('Система несовместна. Решений нет.')
             return 0
-        update_basis(basis_cols, row, col)
-        rectangle_method(array, row, col, basis_cols)
-        change_basis(row, col, array)
+        #rectangle_method(array, row, col, basis_cols)
+        #change_basis(row, col, array)
         row, col = find_allowing_element(array, basis_cols, n, m,  -2)
+    print(basis_cols)
     print_array(array)
     print('phase 2')
-    update_basis(basis_cols, row, col)
+    #update_basis(basis_cols, row, col)
     while True:
+        print_array(array)
         row, col = find_allowing_element(array, basis_cols, n, m)
-        update_basis(basis_cols, row, col)
         print(row, '   ',col,'\n')
         if row == 0 and col == -1:
+            print(basis_cols)
             print_array(array)
             return answer_print(array, basis_cols, n)
         elif row == -1 and col == 0:
             print('Система несовместна. Решений нет.')
             return 0
-        rectangle_method(array, row, col, basis_cols)
-        change_basis(row, col, array)
+        #rectangle_method(array, row, col, basis_cols)
+        #change_basis(row, col, array)
         
+
 def final_calc():
-    '''
+    
     arr = []
-
-    with open('datatable/inequality_system.csv', 'r', newline='') as csv_file:
-        reader = csv.reader(csv_file)
-        for row in reader:
-            print(row)
+    a, b, c = import_table()
+    calc(a,b,c, 2) #ДОБАВИТЬ d=число переменных!!!!!!!!!
     '''
-
     #для теста
-    a = [[225, 5, 3, -1, 0, 0, 1, 0, 0], [150, 2.5, 3, 0, -1, 0, 0, 1, 0], [80, 1, 1.3, 0, 0, -1, 0, 0, 1],
-          [-455, -8.5, -7.3, 1, 1, 1, 0, 0, 0], [0, 5, 2, 0, 0, 0, 0, 0, 0]] # Таблица для метода искусственного базиса
+    #a = [[225, 5, 3, -1, 0, 0, 1, 0, 0], [150, 2.5, 3, 0, -1, 0, 0, 1, 0], [80, 1, 1.3, 0, 0, -1, 0, 0, 1],
+    #      [-455, -8.5, -7.3, 1, 1, 1, 0, 0, 0], [0, 5, 2, 0, 0, 0, 0, 0, 0]] # Таблица для метода искусственного базиса
+    a = [[225, 2, 2, 0, 1, 0, 1, 0, 0], [10, 1, 0, 1, 0, 0, 0, 1, 0],[5, 0, 6, -1, 0, -1, 0, 0, 1], 
+         [-15, -1, -6, 0, 0, 1, 0, 0, 0], [0, 11, -6, 0, 0, 0, 0, 0, 0]]
+    a = [[5, 2, 1, 1, 1, 3, 1, 0, 0 ], [7, 3, 2, 0, -1, 6, 0, 1, 0], [2, 1, 0, -1, 2, 1, 0, 0, 1], [-14, -6, -3, 0, -2, -10, 0, 0, 0], [0, 0, 0, 3, -2, -1, 0, 0, 0]]
     b = [6,7,8] #базисные столбцы
-    c=3 #число уравнений
+    c = 3 #число уравнений
     d = 5 #число переменных
     #basis_cols = [3, 4, 5]
-    #результат: 20, 14, 270
-    #a, b, c = data_input()
-    calc(a,b,c, d)
+    #результат: 20, 14, 270'''
+    
 final_calc()
