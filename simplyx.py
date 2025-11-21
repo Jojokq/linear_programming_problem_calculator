@@ -84,7 +84,7 @@ def check_Mrow_target(array, n):
             return 1
     return 0
 
-def calc(array, basis_cols, n, m):
+def calc(array, basis_cols, n, m    ):
     if check_Mrow_target(array, n) == 0:
         row, col = find_allowing_element(array, basis_cols, n, m)
     else:
@@ -120,7 +120,7 @@ def final_calc():
     
     arr = []
     a, b, c = import_table()
-    calc(a,b,c, 2) #ДОБАВИТЬ d=число переменных!!!!!!!!!
+    calc(a,b,c, len(a[0] - 1 - len(b))) #ДОБАВИТЬ d=число переменных!!!!!!!!!
     '''
     #для теста
     #a = [[225, 5, 3, -1, 0, 0, 1, 0, 0], [150, 2.5, 3, 0, -1, 0, 0, 1, 0], [80, 1, 1.3, 0, 0, -1, 0, 0, 1],
@@ -133,5 +133,3 @@ def final_calc():
     d = 5 #число переменных
     #basis_cols = [3, 4, 5]
     #результат: 20, 14, 270'''
-    
-final_calc()
